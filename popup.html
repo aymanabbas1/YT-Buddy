@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="popup.css" rel="stylesheet" type="text/css" />
+  <script type="module" src="popup.js"></script>
+</head>
+<body>
+  <div class="container">
+    <!-- Checkbox for Blurring Thumbnails -->
+    <div class="checkbox-container" id="blur-container">
+      <input type="checkbox" id="blur-thumbnails" />
+      <label for="blur-thumbnails">Blur thumbnails</label>
+    </div>
+
+    <!-- Message for Non-Video Pages -->
+    <div id="not-video-message" class="title">This is not a YouTube video page.</div>
+
+    <!-- Accordion for Bookmarks -->
+    <div id="accordion-bookmarks" class="accordion">
+      <div class="accordion-header">Bookmarks</div>
+      <div class="accordion-content">
+        <div class="bookmarks" id="bookmarks"></div>
+      </div>
+    </div>
+
+    <!-- Accordion for Notes -->
+    <div id="accordion-notes" class="accordion">
+      <div class="accordion-header">Notes</div>
+      <div class="accordion-content">
+        <textarea id="notes" class="textbox" rows="5"></textarea>
+        <button id="save-notes">Save Notes</button>
+      </div>
+    </div>
+    <div id="accordion-gemini" class="accordion">
+      <div class="accordion-header">Ask Gemini</div>
+      <div class="accordion-content">
+        <input id="input_text" type="text" placeholder="Type your question here..." />
+        <button id="btn_gemini">Submit</button>
+        <div id="result_text"></div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
