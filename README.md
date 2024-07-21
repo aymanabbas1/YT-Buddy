@@ -1,1 +1,1 @@
-# YTBuddy
+# YtBuddy
