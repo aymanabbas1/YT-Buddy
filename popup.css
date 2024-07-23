@@ -138,3 +138,14 @@ button {
   border-radius: 5px;
   background-color: #fafafa;
 }
+
+
+.accordion-content #filter-box {
+  width: 100%;
+  padding: 5px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+

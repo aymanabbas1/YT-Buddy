@@ -110,7 +110,20 @@ const toggleAccordion = (accordionId) => {
   if (accordionId === "accordion-notes" && accordion.classList.contains("active")) {
     loadNotes();
   }
+  else if (accordionId === "accordion-filter-comments" && accordion.classList.contains("active")) {
+    loadFilterSettings();
+  }
 };
+
+// Load filter settings from storage
+function loadFilterSettings() {
+  chrome.storage.sync.get("filterSettings", function(data) {
+    const settings = data.filterSettings || { list: [], state: false };
+    document.getElementById("filter-box").value = settings.list.join(',');
+    document.getElementById("filter-toggle").checked = settings.state;
+  });
+}
+
 const loadNotes = async () => {
   const activeTab = await getActiveTabURL();
   chrome.storage.sync.get([activeTab.url], (data) => {
@@ -125,6 +138,16 @@ const saveNotes = async () => {
   chrome.storage.sync.set({ [activeTab.url]: notes });
 };
 
+function saveFilterSettings() {
+  const words = document.getElementById("filter-box").value.split(',').map(word => word.trim());
+  const state = document.getElementById("filter-toggle").checked;
+  
+  chrome.storage.sync.set({ filterSettings: { list: words, state: state } });
+  // Send message to content script
+  chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
+    chrome.tabs.sendMessage(tabs[0].id, { type: "TOGGLE_FILTER" });
+  });
+}
 
 
 document.addEventListener("DOMContentLoaded", async () => {
@@ -143,6 +166,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     document.getElementById("not-video-message").style.display = "none";
     document.getElementById("blur-container").style.display = "block";
     document.getElementById("accordion-gemini").style.display = "block";
+    document.getElementById("accordion-filter-comments").style.display = "block";
+
   } else if (activeTab.url.includes("youtube.com")) {
     // For YouTube homepage
     document.getElementById("blur-container").style.display = "block"; // Show checkbox
@@ -150,22 +175,30 @@ document.addEventListener("DOMContentLoaded", async () => {
     document.getElementById("accordion-bookmarks").style.display = "none";
     document.getElementById("accordion-notes").style.display = "none";
     document.getElementById("accordion-gemini").style.display = "none";
+    document.getElementById("accordion-filter-comments").style.display = "none";
   } else {
     document.getElementById("blur-container").style.display = "none";
     document.getElementById("not-video-message").style.display = "block";
     document.getElementById("accordion-bookmarks").style.display = "none";
     document.getElementById("accordion-notes").style.display = "none";
     document.getElementById("accordion-gemini").style.display = "none";
+    document.getElementById("accordion-filter-comments").style.display = "none";
+
   }
 
   // Accordion Event Listeners
   document.querySelector("#accordion-bookmarks .accordion-header").addEventListener("click", () => toggleAccordion("accordion-bookmarks"));
   document.querySelector("#accordion-notes .accordion-header").addEventListener("click", () => toggleAccordion("accordion-notes"));
+  document.querySelector("#accordion-filter-comments .accordion-header").addEventListener("click", () => toggleAccordion("accordion-filter-comments"));
   // Event Listener for Gemini Accordion Header
 document.querySelector("#accordion-gemini .accordion-header").addEventListener("click", () => toggleAccordion("accordion-gemini"));
 
 // Event Listener for Gemini Submit Button
 document.getElementById("btn_gemini").addEventListener("click", handleGeminiRequest);
+
+document.getElementById("filter-toggle").addEventListener("change", function() {
+  saveFilterSettings();
+});
 
   // Save Notes Button Event Listener
   document.getElementById("save-notes").addEventListener("click", saveNotes);

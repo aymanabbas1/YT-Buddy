@@ -63,8 +63,39 @@ chrome.runtime.onMessage.addListener((obj, sender, response) => {
     response(currentVideoBookmarks);
   } else if (type === "TOGGLE_BLUR") {
     toggleBlurThumbnails(value);
+  } else if(type === "TOGGLE_FILTER"){
+    applyFilterSettings();
   }
 });
+
+function applyFilterSettings() {
+  chrome.storage.sync.get("filterSettings", function(data) {
+    const settings = data.filterSettings || { list: [], state: false };
+    const comments = document.querySelectorAll("ytd-comment-thread-renderer");
+
+    if (settings.state) {
+      comments.forEach(comment => {
+        for (let i = 0; i < settings.list.length; i++) {
+          if (checkWord(settings.list[i], comment.innerText)) {
+            comment.style.display = "none";
+           
+            break;
+          }
+        }
+      });
+    } else {
+      comments.forEach(comment => {
+        comment.style.display = ""; 
+        // Reset display property to show all comments
+      });
+    }
+  });
+}
+
+function checkWord(word, str) {
+  const regex = new RegExp(`\\b${word}\\b`, 'i'); // Case insensitive exact match
+  return regex.test(str);
+}
 
 const toggleBlurThumbnails = (blurEnabled) => {
   const thumbnailSelector = "ytd-thumbnail";
@@ -89,5 +120,18 @@ const waitForPlayerAndControls = () => {
     setTimeout(waitForPlayerAndControls, 500);
   }
 };
+
+window.addEventListener('scroll', () => {
+  chrome.storage.sync.get(['blurEnabled'], (data) => {
+    const blurEnabled = data.blurThumbnails || false;
+    toggleBlurThumbnails(blurEnabled);
+    applyFilterSettings();
+  });
+
+  
+});
+
+
+
 
 waitForPlayerAndControls();
