@@ -1,6 +1,6 @@
 import { getActiveTabURL } from "./utils.js";
 
-const GEMINI_API_KEY = "AIzaSyB7e6-GXfp8Mrq6EEOOCR9uZ7s_iQ2Tc_Q"; // Replace with your Gemini API key
+const GEMINI_API_KEY = "YOUR_API_KEY"; // Replace with your Gemini API key
 const GEMINI_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${GEMINI_API_KEY}`;
 
 const handleGeminiRequest = () => {
